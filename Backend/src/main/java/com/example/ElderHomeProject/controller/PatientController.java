@@ -7,18 +7,19 @@ import com.example.ElderHomeProject.model.Patient;
 import com.example.ElderHomeProject.repository.ActivityRepository;
 import com.example.ElderHomeProject.repository.GeneralInfoRepository;
 import com.example.ElderHomeProject.repository.PatientRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 public class PatientController {
 
     private final PatientRepository patientRepository;
@@ -30,45 +31,100 @@ public class PatientController {
         this.activityRepository = activityRepository;
     }
 
-    @GetMapping("/verify-token")
-    public ResponseEntity<Map<String, Object>> verifyToken(@RequestParam String tokenCode) {
-        Optional<Patient> patientOptional = patientRepository.findByTokenCode(tokenCode);
-
-        Map<String, Object> response = new HashMap<>();
-
-        if (patientOptional.isPresent()) {
-            Patient patient = patientOptional.get();
-            response.put("status", "success");
-            response.put("message", "Token verified successfully");
-            response.put("patientName", patient.getName());
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("status", "error");
-            response.put("message", "Invalid token");
-            return ResponseEntity.status(401).body(response);
-        }
-    }
-
     @GetMapping("/patients")
-    public ResponseEntity<Patient> getPatientDetails(@RequestParam String tokenCode) {
-        Optional<Patient> patientOptional = patientRepository.findByTokenCode(tokenCode);
-        if (patientOptional.isPresent()) {
-            return ResponseEntity.ok(patientOptional.get());
-        } else {
-            return ResponseEntity.status(404).body(null);
+    public ResponseEntity<?> getPatientDetails(
+            @RequestParam(required = false) String tokenCode,
+            @RequestParam(required = false) String accessUser) {
+
+        Patient patient = null;
+
+        // Fetch a patient based on the provided parameters
+        if (accessUser != null) {
+            List<Patient> patients = patientRepository.findByAccessUser(accessUser);
+
+            if (!patients.isEmpty()) {
+                return ResponseEntity.ok(patients);
+            }
+            return ResponseEntity.status(404).body("No patients found.");
         }
+
+        if (tokenCode != null) {
+            patient = patientRepository.findByTokenCode(tokenCode);
+
+            if (patient != null) {
+                return ResponseEntity.ok(patient);
+            }
+            return ResponseEntity.status(404).body("No patients found.");
+        }
+
+        if (tokenCode == null && accessUser == null) {
+            List<Patient> patients = patientRepository.findAll();
+
+            if (!patients.isEmpty()) {
+                return ResponseEntity.ok(patients);
+            }
+            return ResponseEntity.status(404).body("No patients found.");
+        }
+
+        return ResponseEntity.status(404).body("Patient not found.");
     }
 
     @GetMapping("/patients/activities")
-    public ResponseEntity<List<Activity>> getPatientActivities(@RequestParam String tokenCode) {
-        Optional<Patient> patientOptional = patientRepository.findByTokenCode(tokenCode);
-        if (patientOptional.isPresent()) {
-            Patient patient = patientOptional.get();
+    public ResponseEntity<?> getPatientActivities(@RequestParam String tokenCode) {
+        Patient patient = patientRepository.findByTokenCode(tokenCode);
+
+        if (patient != null) {
             return ResponseEntity.ok(patient.getActivities());
         } else {
-            return ResponseEntity.status(404).body(null);
+            return ResponseEntity.status(404).body("Patient not found.");
         }
     }
 
+    @PostMapping("/patients/add")
+    public ResponseEntity<String> addPatient(@RequestBody String jsonPatient) {
+        try {
+            // Convert JSON string to Patient object
+            ObjectMapper objectMapper = new ObjectMapper();
+            Patient patient = objectMapper.readValue(jsonPatient, Patient.class);
+
+            // Save the patient to the repository
+            patientRepository.save(patient);
+
+            return ResponseEntity.ok("Patient added successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400).body("Error adding patient: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/patients/delete")
+    public ResponseEntity<String> deleteUser(@RequestParam String tokenCode) {
+        if(patientRepository.findByTokenCode(tokenCode) != null){
+            patientRepository.deleteByTokenCode(tokenCode);
+            return ResponseEntity.ok("User deleted");
+        }
+
+        return ResponseEntity.status(404).body(null);
+    }
+
+    @GetMapping("/patients/updateAccessUser")
+    public ResponseEntity<String> updateAccessUser(@RequestParam String tokenCode, @RequestParam String accessUser) {
+        try {
+            // Find patient by tokenCode
+            Patient patient = patientRepository.findByTokenCode(tokenCode);
+
+            if (patient != null) {
+                // Update the accessUser field
+                patient.setAccessUser(accessUser);
+                patientRepository.save(patient); // Save changes to the database
+                return ResponseEntity.ok("Access user updated successfully for patient with tokenCode: " + tokenCode);
+            } else {
+                return ResponseEntity.status(404).body("Patient not found with tokenCode: " + tokenCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating access user: " + e.getMessage());
+        }
+    }
 
 }

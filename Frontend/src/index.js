@@ -5,13 +5,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { SessionProvider } from './session/Session';
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
         <SessionProvider>
         <App />
-    </SessionProvider>,
+    </SessionProvider>
   </React.StrictMode>
 );
 

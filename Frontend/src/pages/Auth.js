@@ -1,35 +1,47 @@
 import React from "react";
 import "./Main.css";
 import logo from "../images/elder-logo.png";
-import { useSession } from '../session/Session';  // Import useSession
 import { useNavigate } from "react-router-dom";
 
 function Auth() {
-  const [listOfPosts, setListOfPosts] = React.useState([]);
-  const [inputToken, setInputToken] = React.useState("");  // State to hold input value
+  const [credentials, setCredentials] = React.useState({ username: "", password: "" });
+  const [error, setError] = React.useState(""); // Add error state
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    fetch("/home")
-      .then((res) => res.json())
-      .then((data) => setListOfPosts(data));
-  }, []);
-
-  const { saveToken } = useSession();  // Access saveToken from context
-
   // Handle changes in the input field
-  const handleInputChange = (event) => {
-    setInputToken(event.target.value);  // Update state with the input value
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials((prevState) => ({
+      ...prevState,
+      [name]: value, // Update the specific field
+    }));
   };
 
-  // Handle button click to save the token
-  const handleButtonClick = () => {
-    if (inputToken) {
-      saveToken(inputToken);  // Save the token using saveToken function
-      console.log("Token saved:", inputToken);  // Log the token for debugging
-      navigate("/profile");
-    } else {
-      console.log("Please enter a token.");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:8081/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+        credentials: "include", // This ensures cookies are sent and received
+      });
+
+      console.log(response);
+
+      if (!response.ok) {
+        throw new Error("Invalid username or password");
+      }
+
+      const data = await response.json();
+      console.log("Login successful:", data);
+
+      navigate("/patients");
+    } catch (err) {
+      setError(err.message || "Something went wrong");
     }
   };
 
@@ -41,15 +53,33 @@ function Auth() {
             <img src={logo} className="logo-img" alt="profile-pic" />
           </div>
 
+        <h3>Login</h3>
+
           <div className="auth-zone">
-            <p>Enter patient token</p>
-            <input 
-              type="text" 
-              value={inputToken} 
-              onChange={handleInputChange}  // Capture input value
-              placeholder="Enter token"  // Optional placeholder text
+            <p>Username</p>
+            <input
+              type="text"
+              name="username" // Set name attribute
+              value={credentials.username}
+              onChange={handleInputChange} // Capture input value
+              placeholder="Username" // Optional placeholder text
             />
-            <button type="button" onClick={handleButtonClick}>Get in!</button>
+
+            <p>Password</p>
+            <input
+              type="password"
+              name="password" // Set name attribute
+              value={credentials.password}
+              onChange={handleInputChange} // Capture input value
+              placeholder="Password" // Optional placeholder text
+            />
+
+            {error && <p style={{ color: "red" }}>{error}</p>} {/* Display errors */}
+
+            <a href="/register">Create new account</a>
+            <button type="button" onClick={handleSubmit}>
+              Login
+            </button>
           </div>
         </div>
       </div>

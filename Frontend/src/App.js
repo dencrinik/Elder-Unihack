@@ -3,29 +3,30 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Profile from "./pages/Profile";
+import Patients from "./pages/Patients";
 import Calendar from "./pages/Calendar";
 import Contact from "./pages/Contact";
+import Chat from "./pages/Chat";
 import Auth from "./pages/Auth";
+import Register from "./pages/Register";
+import Admin from "./pages/Admin";
 
 
 function App() {
   return (
-    <div className="app">
-      <header className="app-header">
       <Router>
       <Navbar />
         <Routes>
           <Route path="" element={<Home />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/patients" element={<Patients />} />
           <Route path="/calendar" element={<Calendar />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </Router>
-
-      </header>
-    </div>
   );
 }
 

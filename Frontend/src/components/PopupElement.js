@@ -3,6 +3,8 @@ import '../components/PopupElement.css';  // Ensure this file contains styles fo
 
 const PopupElements = ({ type, onClose, GeneralInfo }) => {
   // Define statistics for each category
+
+  console.log("Info: " + GeneralInfo.Activities);
   const statistics = {
     Activities: [
       `Daily active hours: ${GeneralInfo?.dailyActiveHours || 'Loading...'}`,

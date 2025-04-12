@@ -19,19 +19,20 @@ public class Patient {
     @Field
     private String tokenCode;
     @Field
+    private String accessUser;
+    @Field
     private List<Activity> activities;
 
+    public Patient() {
+    }
 
-    // Constructors, Getters, and Setters
-    public Patient() {}
-
-    public Patient(String name, int age, String medicalCondition, String tokenCode) {
+    public Patient(String name, int age, String medicalCondition, String tokenCode, String accessUser) {
         this.name = name;
         this.age = age;
         this.medicalCondition = medicalCondition;
         this.tokenCode = tokenCode;
+        this.accessUser = accessUser;
         this.activities = activities;
-
     }
 
     public String getId() {
@@ -61,6 +62,7 @@ public class Patient {
     public void setMedicalCondition(String medicalCondition) {
         this.medicalCondition = medicalCondition;
     }
+
     public String getTokenCode() {
         return tokenCode;
     }
@@ -75,6 +77,14 @@ public class Patient {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public String getAccessUser() {
+        return accessUser;
+    }
+
+    public void setAccessUser(String accessUser) {
+        this.accessUser = accessUser;
     }
 
     @Override

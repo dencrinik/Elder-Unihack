@@ -43,39 +43,38 @@ public class ElderHomeProjectApplication implements CommandLineRunner {
 	}
 
 
+
 	private void loadPatientsFromJson() {
-		/*try {
-			// Load JSON file from resources
-			InputStream inputStream = getClass().getResourceAsStream("/patients.json");
-			// Map JSON array to a List of Patient objects
-			List<Patient> patients = objectMapper.readValue(inputStream, new TypeReference<List<Patient>>() {});
+/*try {
+// Load JSON file from resources
+InputStream inputStream = getClass().getResourceAsStream("/patients.json");
+// Map JSON array to a List of Patient objects
+List<Patient> patients = objectMapper.readValue(inputStream, new TypeReference<List<Patient>>() {});
 
-			// Save all patients to MongoDB
-			patientRepository.saveAll(patients);
+// Save all patients to MongoDB
+patientRepository.saveAll(patients);
 
-			System.out.println("Successfully loaded patients from JSON and saved to MongoDB.");
-		} catch (Exception e) {
-			System.err.println("Error loading patients from JSON: " + e.getMessage());
-			e.printStackTrace();
-		}*/
+System.out.println("Successfully loaded patients from JSON and saved to MongoDB.");
+} catch (Exception e) {
+System.err.println("Error loading patients from JSON: " + e.getMessage());
+e.printStackTrace();
+}*/
 	}
 
 	private void loadGeneralInfoFromJson() {
-/*		try {
-			// Load JSON file from resources
-			InputStream inputStream = getClass().getResourceAsStream("/GeneralInfo.json");
-			// Map JSON array to a List of Patient objects
-			List<GeneralInfo> generalInfo = objectMapper.readValue(inputStream, new TypeReference<List<GeneralInfo>>() {});
+/*try {
+// Load JSON file from resources
+InputStream inputStream = getClass().getResourceAsStream("/GeneralInfo.json");
+// Map JSON array to a List of Patient objects
+List<GeneralInfo> generalInfo = objectMapper.readValue(inputStream, new TypeReference<List<GeneralInfo>>() {});
 
-			// Save all patients to MongoDB
-			generalInfoRepository.saveAll(generalInfo);
+// Save all patients to MongoDB
+generalInfoRepository.saveAll(generalInfo);
 
-			System.out.println("Successfully loaded generalInfo from JSON and saved to MongoDB.");
-		} catch (Exception e) {
-			System.err.println("Error loading GeneralInfo from JSON: " + e.getMessage());
-			e.printStackTrace();
-		}*/
+System.out.println("Successfully loaded generalInfo from JSON and saved to MongoDB.");
+} catch (Exception e) {
+System.err.println("Error loading GeneralInfo from JSON: " + e.getMessage());
+e.printStackTrace();
+}*/
 	}
 }
-
-

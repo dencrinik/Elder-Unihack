@@ -18,14 +18,17 @@ function Navbar() {
           <Link to="/auth">Auth</Link>
         </li>
         <li>
-          <Link to="/calendar">Calendar</Link>
+          <Link to="/patients">Patients</Link>
         </li>
         <li>
-          <Link to="/profile">Profile</Link>
+          <Link to="/chat">Chat</Link>
         </li>
         <li>
           <Link to="/contact">Contact</Link>
         </li>
+        <li>
+          <Link to="/admin">Admin</Link>
+        </li> 
       </ul>
     </nav>
   );
